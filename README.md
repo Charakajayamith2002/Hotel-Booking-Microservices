@@ -42,13 +42,21 @@ hotel-booking-system/
 
 ## 🚀 Installation & Setup
 
-### 1. Create a Virtual Environment
+### 1. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+pip install fastapi uvicorn
+pip install httpx
+```
+
+### 2. Create a Virtual Environment
 
 ```bash
 python -m venv .venv
 ```
 
-### 2. Activate the Environment
+### 3. Activate the Environment
 
 **Windows (PowerShell):**
 ```powershell
@@ -65,11 +73,6 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
 
 ---
 

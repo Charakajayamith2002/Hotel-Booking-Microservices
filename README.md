@@ -1,6 +1,10 @@
-## 🏨 Hotel Booking System — Microservices Architecture
+# 🏨 Hotel Booking System — Microservices Architecture
 
-## 🚀 Features
+A modular hotel booking system built with FastAPI, using a centralized API Gateway as the single entry point for all services.
+
+---
+
+## ✨ Features
 
 - Modular microservices architecture
 - Centralized API Gateway (single entry point)
@@ -10,12 +14,19 @@
 - Optional micro-frontend support
 
 ---
-## Tech Stack
-- **Language**: Python 3.10+
-- **Framework**: FastAPI
-- **API Gateway**: FastAPI + httpx proxy
 
-## Project Structure
+## 🛠 Tech Stack
+
+| Layer       | Technology          |
+|-------------|---------------------|
+| Language    | Python 3.10+        |
+| Framework   | FastAPI             |
+| API Gateway | FastAPI + httpx proxy |
+
+---
+
+## 📁 Project Structure
+
 ```
 hotel-booking-system/
 ├── api-gateway/         → Port 8000 (single entry point)
@@ -27,40 +38,42 @@ hotel-booking-system/
 └── feedback-service/    → Port 8006
 ```
 
-## Installation
+---
 
-Install dependencies for all services:
-```bash
-pip install fastapi uvicorn httpx pydantic
-```
+## 🚀 Installation & Setup
 
-## Running the Services
+### 1. Create a Virtual Environment
 
 ```bash
-# Create Virtual Environment
-
 python -m venv .venv
+```
 
-# Activate Environment
-```
-# Windows (PowerShell):
-```
+### 2. Activate the Environment
+
+**Windows (PowerShell):**
+```powershell
 .venv\Scripts\Activate.ps1
 ```
-# Windows (CMD):
-```
+
+**Windows (CMD):**
+```cmd
 .venv\Scripts\activate
+```
 
-```
-# macOS / Linux:
-```
+**macOS / Linux:**
+```bash
 source .venv/bin/activate
+```
 
-```
-# Install Dependencies
-```
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
+
+---
+
+## ▶️ Running the Services
 
 Open **7 terminal windows** and run one command in each:
 
@@ -86,38 +99,48 @@ cd staff-service && python main.py
 # Terminal 7 - Feedback Service
 cd feedback-service && python main.py
 ```
+
+---
+
 ## 🌐 API Gateway Usage
 
-Instead of accessing multiple ports, use the API Gateway:
+Instead of accessing multiple ports, use the API Gateway at `http://localhost:8000`:
 
-| Service  | Gateway Endpoint                                                           |
-| -------- | -------------------------------------------------------------------------- |
-| Guests   | [http://localhost:8000/api/guests](http://localhost:8000/api/guests)       |
-| Rooms    | [http://localhost:8000/api/rooms](http://localhost:8000/api/rooms)         |
-| Bookings | [http://localhost:8000/api/bookings](http://localhost:8000/api/bookings)   |
-| Payments | [http://localhost:8000/api/payments](http://localhost:8000/api/payments)   |
-| Staff    | [http://localhost:8000/api/staff](http://localhost:8000/api/staff)         |
-| Feedback | [http://localhost:8000/api/feedbacks](http://localhost:8000/api/feedbacks) |
+| Service  | Gateway Endpoint                          |
+|----------|-------------------------------------------|
+| Guests   | http://localhost:8000/api/guests          |
+| Rooms    | http://localhost:8000/api/rooms           |
+| Bookings | http://localhost:8000/api/bookings        |
+| Payments | http://localhost:8000/api/payments        |
+| Staff    | http://localhost:8000/api/staff           |
+| Feedback | http://localhost:8000/api/feedbacks       |
 
-## Swagger UI
+---
 
-| Service          | Direct Access                                            | Via Gateway    |
-| ---------------- | -------------------------------------------------------- | -------------- |
-| API Gateway      | [http://localhost:8000/docs](http://localhost:8000/docs) | —              |
-| Guest Service    | [http://localhost:8001/docs](http://localhost:8001/docs) | /api/guests    |
-| Room Service     | [http://localhost:8002/docs](http://localhost:8002/docs) | /api/rooms     |
-| Booking Service  | [http://localhost:8003/docs](http://localhost:8003/docs) | /api/bookings  |
-| Payment Service  | [http://localhost:8004/docs](http://localhost:8004/docs) | /api/payments  |
-| Staff Service    | [http://localhost:8005/docs](http://localhost:8005/docs) | /api/staff     |
-| Feedback Service | [http://localhost:8006/docs](http://localhost:8006/docs) | /api/feedbacks |
+## 📖 Swagger UI
 
+| Service          | Direct Access                    | Via Gateway    |
+|------------------|----------------------------------|----------------|
+| API Gateway      | http://localhost:8000/docs       | —              |
+| Guest Service    | http://localhost:8001/docs       | /api/guests    |
+| Room Service     | http://localhost:8002/docs       | /api/rooms     |
+| Booking Service  | http://localhost:8003/docs       | /api/bookings  |
+| Payment Service  | http://localhost:8004/docs       | /api/payments  |
+| Staff Service    | http://localhost:8005/docs       | /api/staff     |
+| Feedback Service | http://localhost:8006/docs       | /api/feedbacks |
 
-## Built-in web UI (new)
+---
 
-You can now open the gateway-embedded UI here after starting all services:
-- `http://localhost:8000/` (redirects to the GUI)
+## 🖥️ Built-in Web UI
 
-This UI calls all services through API Gateway paths:
+After starting all services, open the gateway-embedded UI in your browser:
+
+```
+http://localhost:8000/
+```
+
+This UI calls all services through the API Gateway paths:
+
 - `GET /api/guests`
 - `GET /api/rooms`
 - `GET /api/bookings`
@@ -125,37 +148,25 @@ This UI calls all services through API Gateway paths:
 - `GET /api/staff`
 - `GET /api/feedbacks`
 
+---
 
+## 📡 Example API Requests
 
-## Example Requests via Gateway
-
+### Get All Guests
 ```bash
-# Get all guests
 GET http://localhost:8000/api/guests
-
-## Micro-frontend setup (per-service UIs)
-
-Each backend service supports CORS for frontend ports 3000–3006 and gateway 8000.
-
-1. Create a frontend app for each service (e.g., React):
-   - `npx create-react-app frontend/guest-ui`
-   - `npx create-react-app frontend/room-ui`
-2. In each app, call the gateway API path:
-   - `GET /api/guests`, `GET /api/rooms`, etc.
-3. Run service + gateway + UI apps in separate terminals:
-   - `cd guest-service && python main.py`
-   - `cd api-gateway && python main.py`
-   - `cd frontend/guest-ui && npm start`
-4. Use browser URLs:
-   - `http://localhost:3000` (guest UI)
-   - `http://localhost:8000/api/guests` (gateway route)
-
 ```
-# Get available rooms
-GET http://localhost:8000/api/rooms?available_only=true
 
-# Create a booking
+### Get Available Rooms
+```bash
+GET http://localhost:8000/api/rooms?available_only=true
+```
+
+### Create a Booking
+```bash
 POST http://localhost:8000/api/bookings
+Content-Type: application/json
+
 {
   "guest_id": 1,
   "room_id": 2,
@@ -163,28 +174,68 @@ POST http://localhost:8000/api/bookings
   "check_out_date": "2026-04-25",
   "total_price": 650.0
 }
+```
 
-# Process payment
+### Process a Payment
+```bash
 POST http://localhost:8000/api/payments
+Content-Type: application/json
+
 {
   "booking_id": 1,
   "amount": 650.0,
   "payment_method": "card"
 }
+```
 
-# Submit feedback
+### Submit Feedback
+```bash
 POST http://localhost:8000/api/feedbacks
+Content-Type: application/json
+
 {
   "guest_id": 1,
   "booking_id": 1,
   "rating": 5,
   "comment": "Amazing stay!"
 }
+```
 
+---
+
+## 🧩 Micro-Frontend Setup (Optional)
+
+Each backend service supports CORS for frontend ports 3000–3006 and the gateway port 8000.
+
+### Steps
+
+1. **Create a frontend app for each service:**
+   ```bash
+   npx create-react-app frontend/guest-ui
+   npx create-react-app frontend/room-ui
+   ```
+
+2. **In each app, point API calls to the gateway:**
+   ```
+   GET /api/guests
+   GET /api/rooms
+   ```
+
+3. **Run service + gateway + UI in separate terminals:**
+   ```bash
+   cd guest-service && python main.py
+   cd api-gateway && python main.py
+   cd frontend/guest-ui && npm start
+   ```
+
+4. **Access via browser:**
+   - `http://localhost:3000` — Guest UI
+   - `http://localhost:8000/api/guests` — Gateway route
+
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License.
-You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this project, as long as you include the original license and copyright notice.
+This project is licensed under the **MIT License**.
 
-For more details, see the full MIT License.
+You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this project, as long as you include the original license and copyright notice.

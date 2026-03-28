@@ -79,25 +79,25 @@ Open **7 terminal windows** and run one command in each:
 
 ```bash
 # Terminal 1 - API Gateway
-cd api-gateway && python main.py
+cd api-gateway; python main.py
 
 # Terminal 2 - Guest Service
-cd guest-service && python main.py
+cd guest-service; python main.py
 
 # Terminal 3 - Room Service
-cd room-service && python main.py
+cd room-service; python main.py
 
 # Terminal 4 - Booking Service
-cd booking-service && python main.py
+cd booking-service; python main.py
 
 # Terminal 5 - Payment Service
-cd payment-service && python main.py
+cd payment-service; python main.py
 
 # Terminal 6 - Staff Service
-cd staff-service && python main.py
+cd staff-service; python main.py
 
 # Terminal 7 - Feedback Service
-cd feedback-service && python main.py
+cd feedback-service; python main.py
 ```
 
 ---

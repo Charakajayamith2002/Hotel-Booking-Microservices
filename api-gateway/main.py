@@ -4,6 +4,8 @@ from fastapi.responses import Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 import uvicorn
+from copy import deepcopy
+from fastapi.openapi.utils import get_openapi
 
 app = FastAPI(
     title="Hotel Booking - API Gateway",
@@ -21,7 +23,7 @@ Instead of remembering 6 different ports, all requests go through **port 8000**.
 | `/api/rooms/*`         | Room Service           | 8002 |
 | `/api/bookings/*`      | Booking Service        | 8003 |
 | `/api/payments/*`      | Payment Service        | 8004 |
-| `/api/staff/*`         | Staff Service          | 8005 |
+| `/api/staff/*`         | Staff Service        | 8005 |
 | `/api/feedbacks/*`     | Feedback Service       | 8006 |
 """,
     version="1.0.0"
@@ -43,6 +45,86 @@ SERVICE_REGISTRY = {
     "staff":     "http://localhost:8005",
     "feedbacks": "http://localhost:8006",
 }
+
+
+def _prefixed_ref(ref: str, service_name: str) -> str:
+    if not isinstance(ref, str):
+        return ref
+    if ref.startswith("#/components/"):
+        return ref.replace("#/components/", f"#/components/{service_name}_", 1)
+    return ref
+
+
+def _walk_and_prefix_refs(obj, service_name: str):
+    if isinstance(obj, dict):
+        new_dict = {}
+        for k, v in obj.items():
+            if k == "$ref" and isinstance(v, str):
+                new_dict[k] = _prefixed_ref(v, service_name)
+            else:
+                new_dict[k] = _walk_and_prefix_refs(v, service_name)
+        return new_dict
+    elif isinstance(obj, list):
+        return [_walk_and_prefix_refs(v, service_name) for v in obj]
+    else:
+        return obj
+
+
+def _merge_service_openapi(base_schema: dict, service_name: str, service_schema: dict):
+    # Merge paths with /api/{service_name} prefix
+    for path, path_item in service_schema.get("paths", {}).items():
+        gateway_path = f"/api/{service_name}{path}"
+        path_item_prefixed = _walk_and_prefix_refs(deepcopy(path_item), service_name)
+        base_schema.setdefault("paths", {})[gateway_path] = path_item_prefixed
+
+    # Merge components with service prefix to avoid collisions
+    components = service_schema.get("components", {})
+    base_components = base_schema.setdefault("components", {})
+    for comp_type, comp_map in components.items():
+        base_comp_type = base_components.setdefault(comp_type, {})
+        for comp_name, comp_detail in comp_map.items():
+            new_name = f"{service_name}_{comp_name}"
+            base_comp_type[new_name] = _walk_and_prefix_refs(deepcopy(comp_detail), service_name)
+
+    # Merge tags, optionally keep original service tag to avoid collisions
+    for tag in service_schema.get("tags", []):
+        new_tag = deepcopy(tag)
+        new_tag["name"] = f"{service_name.capitalize()} - {tag.get('name', '')}"
+        base_schema.setdefault("tags", []).append(new_tag)
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    gateway_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+
+    # Keep gateway defaults (health/service listing)
+    gateway_schema.setdefault("paths", {})
+    gateway_schema.setdefault("components", {})
+    gateway_schema.setdefault("tags", gateway_schema.get("tags", []))
+
+    for service_name, service_url in SERVICE_REGISTRY.items():
+        try:
+            r = httpx.get(f"{service_url}/openapi.json", timeout=3.0)
+            r.raise_for_status()
+            service_schema = r.json()
+            _merge_service_openapi(gateway_schema, service_name, service_schema)
+        except Exception:
+            # service may be down during startup; continue with what we have
+            continue
+
+    app.openapi_schema = gateway_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
+
 
 @app.get("/", include_in_schema=False)
 def root():

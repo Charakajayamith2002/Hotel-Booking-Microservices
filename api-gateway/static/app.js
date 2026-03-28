@@ -193,19 +193,104 @@ function setActive(name) {
   });
 }
 
+function _normalizeDateForInput(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) {
+    const s = String(value).slice(0, 10);
+    return s.match(/^\d{4}-\d{2}-\d{2}$/) ? s : '';
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+function _getInputValue(input) {
+  if (!input) return '';
+  if (input.tagName === 'INPUT' && input.type === 'checkbox') {
+    return input.checked;
+  }
+  if (input.tagName === 'INPUT' && input.type === 'number') {
+    return input.value === '' ? null : Number(input.value);
+  }
+  return input.value;
+}
+
 function createFieldInput(field, value = '') {
   const wrap = document.createElement('div');
   wrap.className = 'field';
   const lbl = document.createElement('label');
-  lbl.textContent = field.replace(/_/g,' ');
-  const input = document.createElement('input');
-  input.className = 'input';
-  input.name = field;
-  input.value = value;
-  input.placeholder = field.replace(/_/g,' ');
-  input.autocomplete = 'off';
-  wrap.append(lbl, input);
-  return {wrap,input};
+  lbl.textContent = field.replace(/_/g, ' ');
+
+  const lower = field.toLowerCase();
+
+  const selectOptions = {
+    room_type: ['single', 'double', 'suite', 'deluxe'],
+    payment_method: ['card', 'cash', 'transfer', 'other'],
+    status: ['pending', 'confirmed', 'checked-in', 'checked-out', 'cancelled', 'completed'],
+    role: ['receptionist', 'manager', 'housekeeping', 'maintenance', 'other'],
+    nationality: ['American', 'British', 'Canadian', 'Australian', 'Other']
+  };
+
+  let inputElement;
+
+  if (lower === 'is_available') {
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'input';
+    input.name = field;
+    input.checked = Boolean(value);
+    inputElement = input;
+  } else if (Object.prototype.hasOwnProperty.call(selectOptions, lower)) {
+    const select = document.createElement('select');
+    select.className = 'input';
+    select.name = field;
+    const options = selectOptions[lower];
+    select.appendChild(new Option(`Select ${field.replace(/_/g, ' ')}`, ''));
+    options.forEach((o) => {
+      const option = new Option(o.charAt(0).toUpperCase() + o.slice(1), o);
+      if (String(value).toLowerCase() === String(o).toLowerCase()) option.selected = true;
+      select.appendChild(option);
+    });
+    inputElement = select;
+  } else {
+    const input = document.createElement('input');
+    input.className = 'input';
+    input.name = field;
+
+    if (lower.includes('date')) {
+      input.type = 'date';
+      input.value = _normalizeDateForInput(value);
+      input.addEventListener('focus', () => {
+        if (typeof input.showPicker === 'function') {
+          input.showPicker();
+        }
+      });
+    } else if (lower.includes('email')) {
+      input.type = 'email';
+      input.value = value;
+    } else if (lower.includes('phone')) {
+      input.type = 'tel';
+      input.value = value;
+    } else if (['id', 'guest_id', 'room_id', 'booking_id', 'floor'].includes(lower)) {
+      input.type = 'number';
+      input.value = value || '';
+      input.step = '1';
+    } else if (['price_per_night', 'total_price', 'amount', 'rating'].includes(lower)) {
+      input.type = 'number';
+      input.value = value || '';
+      input.step = '0.01';
+    } else {
+      input.type = 'text';
+      input.value = value;
+    }
+
+    input.placeholder = field.replace(/_/g, ' ');
+    input.autocomplete = 'off';
+
+    inputElement = input;
+  }
+
+  wrap.append(lbl, inputElement);
+  return {wrap, input: inputElement};
 }
 
 function statusPill(value) {
@@ -332,7 +417,7 @@ function renderTable(section, data, reloadFn) {
       form.addEventListener('submit', async ev=>{
         ev.preventDefault();
         const payload = {};
-        updateFields.forEach(field=>payload[field]=updateInputs[field].value);
+        updateFields.forEach(field=>payload[field]=_getInputValue(updateInputs[field]));
         try {
           save.disabled = true;
           const r = await fetch(`${cfg.path}/${item.id}`, {
@@ -496,7 +581,7 @@ function openCreateModal(section, onCreated) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {};
-    cfg.createFields.forEach((field) => (payload[field] = inputs[field].value));
+    cfg.createFields.forEach((field) => (payload[field] = _getInputValue(inputs[field])));
     try {
       save.disabled = true;
       const r = await fetch(cfg.path, {

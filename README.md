@@ -1,5 +1,15 @@
-# 🏨 Hotel Booking System — Microservices Architecture
+## 🏨 Hotel Booking System — Microservices Architecture
 
+## 🚀 Features
+
+- Modular microservices architecture
+- Centralized API Gateway (single entry point)
+- Independent service deployment
+- Built-in Swagger API documentation
+- Gateway-based routing for all services
+- Optional micro-frontend support
+
+---
 ## Tech Stack
 - **Language**: Python 3.10+
 - **Framework**: FastAPI
@@ -26,6 +36,32 @@ pip install fastapi uvicorn httpx pydantic
 
 ## Running the Services
 
+```bash
+# Create Virtual Environment
+
+python -m venv .venv
+
+# Activate Environment
+```
+# Windows (PowerShell):
+```
+.venv\Scripts\Activate.ps1
+```
+# Windows (CMD):
+```
+.venv\Scripts\activate
+
+```
+# macOS / Linux:
+```
+source .venv/bin/activate
+
+```
+# Install Dependencies
+```
+pip install -r requirements.txt
+```
+
 Open **7 terminal windows** and run one command in each:
 
 ```bash
@@ -50,13 +86,31 @@ cd staff-service && python main.py
 # Terminal 7 - Feedback Service
 cd feedback-service && python main.py
 ```
+## 🌐 API Gateway Usage
+
+Instead of accessing multiple ports, use the API Gateway:
+
+| Service  | Gateway Endpoint                                                           |
+| -------- | -------------------------------------------------------------------------- |
+| Guests   | [http://localhost:8000/api/guests](http://localhost:8000/api/guests)       |
+| Rooms    | [http://localhost:8000/api/rooms](http://localhost:8000/api/rooms)         |
+| Bookings | [http://localhost:8000/api/bookings](http://localhost:8000/api/bookings)   |
+| Payments | [http://localhost:8000/api/payments](http://localhost:8000/api/payments)   |
+| Staff    | [http://localhost:8000/api/staff](http://localhost:8000/api/staff)         |
+| Feedback | [http://localhost:8000/api/feedbacks](http://localhost:8000/api/feedbacks) |
 
 ## Swagger UI
 
-| Service          | Direct Swagger URL                        | Via Gateway                          |
-|------------------|-------------------------------------------|--------------------------------------|
-| API Gateway      | http://localhost:8000/docs                | —                                    |
-| Guest Service    | http://localhost:8001/docs                | http://localhost:8000/api/guests     |
+| Service          | Direct Access                                            | Via Gateway    |
+| ---------------- | -------------------------------------------------------- | -------------- |
+| API Gateway      | [http://localhost:8000/docs](http://localhost:8000/docs) | —              |
+| Guest Service    | [http://localhost:8001/docs](http://localhost:8001/docs) | /api/guests    |
+| Room Service     | [http://localhost:8002/docs](http://localhost:8002/docs) | /api/rooms     |
+| Booking Service  | [http://localhost:8003/docs](http://localhost:8003/docs) | /api/bookings  |
+| Payment Service  | [http://localhost:8004/docs](http://localhost:8004/docs) | /api/payments  |
+| Staff Service    | [http://localhost:8005/docs](http://localhost:8005/docs) | /api/staff     |
+| Feedback Service | [http://localhost:8006/docs](http://localhost:8006/docs) | /api/feedbacks |
+
 
 ## Built-in web UI (new)
 
@@ -71,12 +125,7 @@ This UI calls all services through API Gateway paths:
 - `GET /api/staff`
 - `GET /api/feedbacks`
 
-Guest creation button is supported in the UI to add sample guest data.
-| Room Service     | http://localhost:8002/docs                | http://localhost:8000/api/rooms      |
-| Booking Service  | http://localhost:8003/docs                | http://localhost:8000/api/bookings   |
-| Payment Service  | http://localhost:8004/docs                | http://localhost:8000/api/payments   |
-| Staff Service    | http://localhost:8005/docs                | http://localhost:8000/api/staff      |
-| Feedback Service | http://localhost:8006/docs                | http://localhost:8000/api/feedbacks  |
+
 
 ## Example Requests via Gateway
 
@@ -131,4 +180,11 @@ POST http://localhost:8000/api/feedbacks
   "rating": 5,
   "comment": "Amazing stay!"
 }
-```
+
+
+## 📝 License
+
+This project is licensed under the MIT License.
+You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this project, as long as you include the original license and copyright notice.
+
+For more details, see the full MIT License.

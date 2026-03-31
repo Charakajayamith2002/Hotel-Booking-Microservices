@@ -72,7 +72,11 @@ python -m venv .venv
 ```bash
 source .venv/bin/activate
 ```
+### 4. Install Dependencies
 
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
@@ -101,6 +105,10 @@ cd staff-service; python main.py
 
 # Terminal 7 - Feedback Service
 cd feedback-service; python main.py
+
+# Terminal 8 - Feedback Service
+cd api-gateway; python frontend.py
+
 ```
 
 ---
@@ -134,6 +142,32 @@ Instead of accessing multiple ports, use the API Gateway at `http://localhost:80
 | Payment Service  | http://localhost:8004/docs       | /api/payments  |
 | Staff Service    | http://localhost:8005/docs       | /api/staff     |
 | Feedback Service | http://localhost:8006/docs       | /api/feedbacks |
+
+---
+
+
+## 📖 API point
+
+| Service          | Direct Access              |
+|------------------|----------------------------|
+| API Gateway      | http://localhost:8000      | 
+| Guest Service    | http://localhost:8001      | 
+| Room Service     | http://localhost:8002      | 
+| Booking Service  | http://localhost:8003      | 
+| Payment Service  | http://localhost:8004      | 
+| Staff Service    | http://localhost:8005      | 
+| Feedback Service | http://localhost:8006      | 
+
+---
+
+## 📖 Frontend UI
+
+.................................................
+| Service          | Direct Access              |
+|------------------|----------------------------|
+| Frontend UI      | http://localhost:8000/ui   | 
+|                  | http://localhost:8007      | 
+.................................................
 
 ---
 

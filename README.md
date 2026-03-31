@@ -106,6 +106,9 @@ cd feedback-service; python main.py
 
 Instead of accessing multiple ports, use the API Gateway at `http://localhost:8000`:
 
+- `http://localhost:8000` → Swagger UI (redirects to `/docs`)
+- `http://localhost:8000/ui` → Frontend UI (redirects to `http://localhost:8007`)
+
 | Service  | Gateway Endpoint                          |
 |----------|-------------------------------------------|
 | Guests   | http://localhost:8000/api/guests          |
@@ -131,12 +134,12 @@ Instead of accessing multiple ports, use the API Gateway at `http://localhost:80
 
 ---
 
-## 🖥️ Built-in Web UI
+## 🖥️ Web UI
 
-After starting all services, open the gateway-embedded UI in your browser:
+After starting all services, open the UI in your browser:
 
 ```
-http://localhost:8000/
+http://localhost:8007
 ```
 
 This UI calls all services through the API Gateway paths:

@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 import httpx
 import uvicorn
 from copy import deepcopy
@@ -23,19 +22,28 @@ Instead of remembering 6 different ports, all requests go through **port 8000**.
 | `/api/rooms/*`         | Room Service           | 8002 |
 | `/api/bookings/*`      | Booking Service        | 8003 |
 | `/api/payments/*`      | Payment Service        | 8004 |
-| `/api/staff/*`         | Staff Service        | 8005 |
+| `/api/staff/*`         | Staff Service          | 8005 |
 | `/api/feedbacks/*`     | Feedback Service       | 8006 |
 """,
     version="1.0.0"
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:3005", "http://localhost:3006", "http://localhost:8000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://localhost:3004",
+        "http://localhost:3005",
+        "http://localhost:3006",
+        "http://localhost:8000",
+        "http://localhost:8007",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 SERVICE_REGISTRY = {
     "guests":    "http://localhost:8001",
@@ -128,7 +136,16 @@ app.openapi = custom_openapi
 
 @app.get("/", include_in_schema=False)
 def root():
-    return RedirectResponse(url="/static/index.html")
+    return {
+        "service": "API Gateway",
+        "status": "running",
+        "port": 8000,
+        "registered_services": list(SERVICE_REGISTRY.keys())
+    }
+
+@app.get("/ui", include_in_schema=False)
+def ui_redirect():
+    return RedirectResponse(url="http://localhost:8007")
 
 @app.get("/health", tags=["Gateway"])
 def gateway_health():

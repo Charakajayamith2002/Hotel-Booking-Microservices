@@ -28,6 +28,9 @@ sleep 2
 python api-gateway/main.py &
 echo "API Gateway started on port 8000"
 
+python api-gateway/frontend.py &
+echo "Frontend started on port 8007"
+
 echo ""
 echo "All services running!"
 echo ""
@@ -41,6 +44,9 @@ echo "  Notification Service:  http://localhost:8006/docs"
 echo ""
 echo "Gateway Swagger URL:"
 echo "  API Gateway:           http://localhost:8000/docs"
+echo ""
+echo "Frontend URL:"
+echo "  UI:                    http://localhost:8007"
 echo ""
 echo "Press Ctrl+C to stop all services"
 wait

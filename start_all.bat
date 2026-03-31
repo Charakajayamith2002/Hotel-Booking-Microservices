@@ -22,6 +22,8 @@ timeout /t 1 >nul
 
 timeout /t 2 >nul
 start "API Gateway" cmd /k "cd api-gateway && python main.py"
+timeout /t 1 >nul
+start "Frontend" cmd /k "cd api-gateway && python frontend.py"
 
 echo.
 echo All services started!
@@ -36,5 +38,8 @@ echo   Notification Service:  http://localhost:8006/docs
 echo.
 echo Swagger URL (via API Gateway):
 echo   API Gateway:           http://localhost:8000/docs
+echo.
+echo Frontend URL:
+echo   UI:                    http://localhost:8007
 echo.
 pause

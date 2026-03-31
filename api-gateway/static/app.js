@@ -1,4 +1,5 @@
 const sections = ['dashboard', 'guests', 'rooms', 'bookings', 'payments', 'staff', 'feedbacks'];
+const API_BASE = 'http://localhost:8000';
 const content = document.getElementById('content');
 const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
@@ -11,7 +12,7 @@ const serviceConfig = {
     labels: ['id','first_name','last_name','email','phone','nationality','created_at'],
     createFields: ['first_name','last_name','email','phone','nationality'],
     updateFields: ['first_name','last_name','email','phone','nationality'],
-    path:'/api/guests',
+    path:`${API_BASE}/api/guests`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -19,7 +20,7 @@ const serviceConfig = {
     labels:['id','room_number','room_type','price_per_night','floor','is_available','amenities'],
     createFields:['room_number','room_type','price_per_night','floor','amenities'],
     updateFields:['room_type','price_per_night','is_available','amenities'],
-    path:'/api/rooms',
+    path:`${API_BASE}/api/rooms`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -27,7 +28,7 @@ const serviceConfig = {
     labels:['id','guest_id','room_id','check_in_date','check_out_date','status','total_price','created_at'],
     createFields:['guest_id','room_id','check_in_date','check_out_date','total_price'],
     updateFields:['check_in_date','check_out_date','status','total_price'],
-    path:'/api/bookings',
+    path:`${API_BASE}/api/bookings`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -35,7 +36,7 @@ const serviceConfig = {
     labels:['id','booking_id','amount','payment_method','status','transaction_id','created_at'],
     createFields:['booking_id','amount','payment_method'],
     updateFields:['status'],
-    path:'/api/payments',
+    path:`${API_BASE}/api/payments`,
     supportsDelete:false,
     supportsPut:true
   },
@@ -43,7 +44,7 @@ const serviceConfig = {
     labels:['id','first_name','last_name','role','department','email','phone'],
     createFields:['first_name','last_name','role','department','email','phone'],
     updateFields:['role','department','email','phone'],
-    path:'/api/staff',
+    path:`${API_BASE}/api/staff`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -51,7 +52,7 @@ const serviceConfig = {
     labels:['id','guest_id','booking_id','rating','comment','created_at'],
     createFields:['guest_id','booking_id','rating','comment'],
     updateFields:['rating','comment'],
-    path:'/api/feedbacks',
+    path:`${API_BASE}/api/feedbacks`,
     supportsDelete:true,
     supportsPut:true
   },

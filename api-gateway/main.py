@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 import httpx
 import uvicorn
 from copy import deepcopy
@@ -59,7 +60,11 @@ def _prefixed_ref(ref: str, service_name: str) -> str:
     if not isinstance(ref, str):
         return ref
     if ref.startswith("#/components/"):
-        return ref.replace("#/components/", f"#/components/{service_name}_", 1)
+        # "#/components/schemas/Guest" → "#/components/schemas/guests_Guest"
+        parts = ref.split("/", 3)  # ["#", "components", "schemas", "Guest"]
+        if len(parts) == 4:
+            parts[3] = f"{service_name}_{parts[3]}"
+            return "/".join(parts)
     return ref
 
 
@@ -134,18 +139,10 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 
-@app.get("/", include_in_schema=False)
-def root():
-    return {
-        "service": "API Gateway",
-        "status": "running",
-        "port": 8000,
-        "registered_services": list(SERVICE_REGISTRY.keys())
-    }
-
 @app.get("/ui", include_in_schema=False)
+@app.get("/", include_in_schema=False)
 def ui_redirect():
-    return RedirectResponse(url="http://localhost:8007")
+    return RedirectResponse(url="/static/index.html")
 
 @app.get("/health", tags=["Gateway"])
 def gateway_health():
@@ -170,7 +167,7 @@ async def proxy_request(service_name: str, path: str, request: Request) -> Respo
             detail=f"Service '{service_name}' not found. Available: {list(SERVICE_REGISTRY.keys())}"
         )
     base_url = SERVICE_REGISTRY[service_name]
-    upstream_path = f"/{service_name}/{path}" if path else f"/{service_name}"
+    upstream_path = f"/{path}" if path else "/"
     query_string = str(request.url.query)
     upstream_url = f"{base_url}{upstream_path}"
     if query_string:
@@ -216,6 +213,8 @@ async def gateway_proxy_root(service_name: str, request: Request):
 )
 async def gateway_proxy(service_name: str, path: str, request: Request):
     return await proxy_request(service_name, path, request)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

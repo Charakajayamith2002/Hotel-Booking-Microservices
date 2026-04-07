@@ -1,5 +1,5 @@
 const sections = ['dashboard', 'guests', 'rooms', 'bookings', 'payments', 'staff', 'feedbacks'];
-const API_BASE = 'http://localhost:8000';
+const API_BASE = '';
 const content = document.getElementById('content');
 const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
@@ -12,7 +12,7 @@ const serviceConfig = {
     labels: ['id','first_name','last_name','email','phone','nationality','created_at'],
     createFields: ['first_name','last_name','email','phone','nationality'],
     updateFields: ['first_name','last_name','email','phone','nationality'],
-    path:`${API_BASE}/api/guests`,
+    path:`${API_BASE}/api/guests/guests`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -20,7 +20,7 @@ const serviceConfig = {
     labels:['id','room_number','room_type','price_per_night','floor','is_available','amenities'],
     createFields:['room_number','room_type','price_per_night','floor','amenities'],
     updateFields:['room_type','price_per_night','is_available','amenities'],
-    path:`${API_BASE}/api/rooms`,
+    path:`${API_BASE}/api/rooms/rooms`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -28,7 +28,7 @@ const serviceConfig = {
     labels:['id','guest_id','room_id','check_in_date','check_out_date','status','total_price','created_at'],
     createFields:['guest_id','room_id','check_in_date','check_out_date','total_price'],
     updateFields:['check_in_date','check_out_date','status','total_price'],
-    path:`${API_BASE}/api/bookings`,
+    path:`${API_BASE}/api/bookings/bookings`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -36,7 +36,7 @@ const serviceConfig = {
     labels:['id','booking_id','amount','payment_method','status','transaction_id','created_at'],
     createFields:['booking_id','amount','payment_method'],
     updateFields:['status'],
-    path:`${API_BASE}/api/payments`,
+    path:`${API_BASE}/api/payments/payments`,
     supportsDelete:false,
     supportsPut:true
   },
@@ -44,7 +44,7 @@ const serviceConfig = {
     labels:['id','first_name','last_name','role','department','email','phone'],
     createFields:['first_name','last_name','role','department','email','phone'],
     updateFields:['role','department','email','phone'],
-    path:`${API_BASE}/api/staff`,
+    path:`${API_BASE}/api/staff/staff`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -52,7 +52,7 @@ const serviceConfig = {
     labels:['id','guest_id','booking_id','rating','comment','created_at'],
     createFields:['guest_id','booking_id','rating','comment'],
     updateFields:['rating','comment'],
-    path:`${API_BASE}/api/feedbacks`,
+    path:`${API_BASE}/api/feedbacks/feedbacks`,
     supportsDelete:true,
     supportsPut:true
   },
@@ -313,7 +313,7 @@ function statusPill(value) {
   return span;
 }
 
-function formatCell(section, label, value) {
+function formatCell(_section, label, value) {
   if (label === 'is_available') return statusPill(value ? 'Available' : 'Occupied');
   if (label === 'status') return statusPill(value || '');
   if (label === 'rating') {
@@ -726,7 +726,6 @@ async function renderDashboard() {
     makeStat("Today's Revenue", money(todaysRevenue), '$'),
     makeStat('Check-ins Today', String(checkinsToday), '✅'),
     makeStat('Avg. Rating', (() => {
-      const fb = fetchJson(serviceConfig.feedbacks.path).catch(() => []);
       // quick placeholder; will be replaced below
       return '—';
     })(), '⭐'),
